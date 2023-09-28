@@ -1,5 +1,16 @@
 {
-    "endpoint": "http://ptero.rainyun.com",
-    "server_id": "6e05975f-dfa7-4ad6-bba5-4bd4d5367640",
-    "yaml_config_file": "/config.yml"
+    "tasks": [
+        {
+            "run": "servers_edit",
+            "pron": "/5.*.*.*"
+        },
+        {
+            "run": "online_players",
+            "pron": "0.*.*.*"
+        },
+        {
+            "run": "restart",
+            "pron": "0.*.*.*"
+        }
+    ]
 }

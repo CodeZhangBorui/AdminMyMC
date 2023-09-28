@@ -1,22 +1,36 @@
 import json
 import time
-import socket
-import requests
-import yaml
-from pydactyl import PterodactylClient
-from mcstatus import JavaServer
 
-def log(string, level='INFO'):
-    print(f"[{level} {time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())}] {string}")
+import tasks.tasks_lib as tasks_lib
+from tasks.tasks import *
 
-# Read pterodactyl key from file
-log("Reading config...")
-try:
-    with open('config/ptero.key') as f:
-        pterodactyl_key = f.read()
-except:
-    log("Failed to read pterodactyl key, please check your key file.")
-    exit(1)
+def is_pron_match(pronstr):
+    # Such as /5.*.*.*
+    pronlist = pronstr.split(".")
+    if len(pronlist) != 4:
+        return None
+    match_count = 0
+    nowtime = [
+        time.localtime().tm_sec,
+        time.localtime().tm_min,
+        time.localtime().tm_hour,
+        time.localtime().tm_mday
+    ]
+    for i in range(4):
+        if pronlist[i] == "*":
+            match_count += 1
+        elif(pronlist[i].find("/") == 0):
+            pronlist[i] = int(pronlist[i].replace("/", ""))
+            if(nowtime[i] % pronlist[i] == 0):
+                match_count += 1
+        else:
+            pronlist[i] = int(pronlist[i])
+            if(nowtime[i] == pronlist[i]):
+                match_count += 1
+    if(match_count == 4):
+        return True
+    else:
+        return False
 
 # Read worker config
 try:
@@ -26,19 +40,13 @@ except:
     log("Failed to read worker config, please check your config file.")
     exit(1)
 
-# Create a client to connect to the panel and authenticate with your API key.
-log("Connecting to panel...")
-try:
-    api = PterodactylClient(worker_config['endpoint'], pterodactyl_key)
-except:
-    log("Failed to connect to panel, please check your config and network.")
-    exit(1)
-
-log("Worker started")
-worker_turn = 0
+log("Worker started, registered " + str(len(worker_config["tasks"])) + " tasks.")
 while(1):
-    queue_processer()
-    if(worker_turn % 12 == 0):
-        online_json_processer()
-    time.sleep(5)
-    worker_turn += 1
+    for task in worker_config["tasks"]:
+        if(is_pron_match(task["pron"])):
+            tasks_lib.log("Running task " + task["run"] + "...")
+            try:
+                eval(task["run"] + "().start()")
+            except:
+                tasks_lib.log("Failed to run task " + task["run"] + ", please check your config file.")
+    time.sleep(0.5)
