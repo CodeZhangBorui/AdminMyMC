@@ -1,0 +1,205 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>{{ siteinfo.site_name }}</title>
+    <link rel="stylesheet" href="/static/index.min.css">
+    <script type="module" src="/static/fluentui-web-components.min.js"></script>
+    <script src="/static/jquery-1.8.3.min.js"></script>
+    <script src="/static/highcharts/highcharts.js"></script>
+    <script src="/static/highcharts/modules/exporting.js"></script>
+    <script src="/static/highcharts/modules/oldie.js"></script>
+    <script src="/static/highcharts/zh-cn.js"></script>
+</head>
+<body>
+    <div class="topmenu">
+        <div>
+            {% for menu in menus %}
+            <fluent-anchor href="{{ menu.href }}" appearance="lightweight">{{ menu.text }}</fluent-anchor>
+            {% endfor %}
+        </div>
+        <div>
+            <fluent-anchor href="javascript:switchUserMenu()" appearance="lightweight">{{ username }}</fluent-anchor>
+            <fluent-menu class="hidden" style="position: fixed; right: 5px; top: 50px;">
+                {% for menu in personalmenus %}
+                <fluent-menu-item onclick="window.location.href='{{ menu.href }}'">{{ menu.text }}</fluent-menu-item>
+                {% endfor %}
+            </fluent-menu>
+            <script>
+                function switchUserMenu() {
+                    var menu = document.querySelector('.topmenu fluent-menu');
+                    if (menu.classList.contains('hidden')) {
+                        menu.classList.remove('hidden');
+                    } else {
+                        menu.classList.add('hidden');
+                    }
+                }
+            </script>
+        </div>
+    </div>
+    <div class="app">
+        <p>Powered by AdminMyMC by CodeZhangBorui, ver1.3.2@b20230926</p>
+        <div id="container24" style="min-width:400px;height:400px"></div>
+        <div id="container7d" style="min-width:400px;height:400px"></div>
+        <script>
+            Highcharts.setOptions({ global: { useUTC: false } }); 
+            var chart24 = null;
+            $.getJSON('/static/online.json', function (data) {
+                chart24 = Highcharts.chart('container24', {
+                    chart: {
+                        zoomType: 'x'
+                    },
+                    title: {
+                        text: '服务器在线人数图'
+                    },
+                    subtitle: {
+                        text: '24 小时'
+                    },
+                    xAxis: {
+                        type: 'datetime',
+                        maxRange: 24 * 60 * 60 * 1000,
+                        dateTimeLabelFormats: {
+                            millisecond: '%H:%M:%S.%L',
+                            second: '%H:%M:%S',
+                            minute: '%H:%M',
+                            hour: '%H:%M',
+                            day: '%m-%d',
+                            week: '%m-%d',
+                            month: '%Y-%m',
+                            year: '%Y'
+                        }
+                    },
+                    tooltip: {
+                        dateTimeLabelFormats: {
+                            millisecond: '%H:%M:%S.%L',
+                            second: '%H:%M:%S',
+                            minute: '%H:%M',
+                            hour: '%H:%M',
+                            day: '%Y-%m-%d',
+                            week: '%m-%d',
+                            month: '%Y-%m',
+                            year: '%Y'
+                        }
+                    },
+                    yAxis: {
+                        title: {
+                            text: '人数'
+                        }
+                    },
+                    legend: {
+                        enabled: false
+                    },
+                    plotOptions: {
+                        area: {
+                            fillColor: {
+                                linearGradient: {
+                                    x1: 0,
+                                    y1: 0,
+                                    x2: 0,
+                                    y2: 1
+                                },
+                                stops: [
+                                    [0, new Highcharts.getOptions().colors[0]],
+                                    [1, new Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
+                                ]
+                            },
+                            marker: {
+                                radius: 2
+                            },
+                            lineWidth: 1,
+                            states: {
+                                hover: {
+                                    lineWidth: 1
+                                }
+                            },
+                            threshold: null
+                        }
+                    },
+                    series: [{
+                        type: 'area',
+                        name: '人数',
+                        data: data['online']
+                    }]
+                });
+            }); 
+            var chart7d = null;
+            $.getJSON('/static/online.json', function (data) {
+                chart7d = Highcharts.chart('container7d', {
+                    chart: {
+                        zoomType: 'x'
+                    },
+                    title: {
+                        text: '服务器在线人数图'
+                    },
+                    subtitle: {
+                        text: '7 天'
+                    },
+                    xAxis: {
+                        type: 'datetime',
+                        maxRange: 7 * 24 * 60 * 60 * 1000,
+                        dateTimeLabelFormats: {
+                            millisecond: '%H:%M:%S.%L',
+                            second: '%H:%M:%S',
+                            minute: '%H:%M',
+                            hour: '%H:%M',
+                            day: '%m-%d',
+                            week: '%m-%d',
+                            month: '%Y-%m',
+                            year: '%Y'
+                        }
+                    },
+                    tooltip: {
+                        dateTimeLabelFormats: {
+                            millisecond: '%H:%M:%S.%L',
+                            second: '%H:%M:%S',
+                            minute: '%H:%M',
+                            hour: '%H:%M',
+                            day: '%Y-%m-%d',
+                            week: '%m-%d',
+                            month: '%Y-%m',
+                            year: '%Y'
+                        }
+                    },
+                    yAxis: {
+                        title: {
+                            text: '人数'
+                        }
+                    },
+                    legend: {
+                        enabled: false
+                    },
+                    plotOptions: {
+                        area: {
+                            fillColor: {
+                                linearGradient: {
+                                    x1: 0,
+                                    y1: 0,
+                                    x2: 0,
+                                    y2: 1
+                                },
+                                stops: [
+                                    [0, new Highcharts.getOptions().colors[0]],
+                                    [1, new Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
+                                ]
+                            },
+                            marker: {
+                                radius: 2
+                            },
+                            lineWidth: 1,
+                            states: {
+                                hover: {
+                                    lineWidth: 1
+                                }
+                            },
+                            threshold: null
+                        }
+                    },
+                    series: [{
+                        type: 'area',
+                        name: '人数',
+                        data: data['online']
+                    }]
+                });
+            }); 
+        </script>
+    </div>
+</body>

@@ -1,0 +1,39 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>{{ siteinfo.site_name }} - API 与 API 密钥</title>
+    <link rel="stylesheet" href="/static/index.min.css">
+    <script type="module" src="/static/fluentui-web-components.min.js"></script>
+</head>
+<body>
+    <div class="topmenu">
+        <div>
+            {% for menu in menus %}
+            <fluent-anchor href="{{ menu.href }}" appearance="lightweight">{{ menu.text }}</fluent-anchor>
+            {% endfor %}
+        </div>
+        <div>
+            <fluent-anchor href="javascript:switchUserMenu()" appearance="lightweight">{{ username }}</fluent-anchor>
+            <fluent-menu class="hidden" style="position: fixed; right: 5px; top: 50px;">
+                {% for menu in personalmenus %}
+                <fluent-menu-item onclick="window.location.href='{{ menu.href }}'">{{ menu.text }}</fluent-menu-item>
+                {% endfor %}
+            </fluent-menu>
+            <script>
+                function switchUserMenu() {
+                    var menu = document.querySelector('.topmenu fluent-menu');
+                    if (menu.classList.contains('hidden')) {
+                        menu.classList.remove('hidden');
+                    } else {
+                        menu.classList.add('hidden');
+                    }
+                }
+            </script>
+        </div>
+    </div>
+    <div class="app">
+        <h2>API 与 API 密钥</h2>
+        <p>在这里管理你的 API 密钥</p>
+        <fluent-button onclick="window.location.href='/apikey/create'" appearance="accent">创建 API 密钥</fluent-button>
+    </div>
+</body>

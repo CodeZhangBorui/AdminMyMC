@@ -1,0 +1,33 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>{{ siteinfo.site_name }} - 修改密码</title>
+    <link rel="stylesheet" href="/static/index.min.css">
+    <script type="module" src="/static/fluentui-web-components.min.js"></script>
+</head>
+<body>
+    <div class="app">
+        <h2>修改密码</h2>
+        <fluent-anchor href="javascript:window.history.go(-1)" appearance="lightweight">< 返回</fluent-anchor>
+        <form action="/changepass" method="post">
+            <p><fluent-text-field type=password name=old_password appearance="outline">旧密码</fluent-text-field></p>
+            <p><fluent-text-field type=password name=new_password appearance="outline">新密码</fluent-text-field></p>
+            <p><fluent-text-field type=password name=retype_password appearance="outline">重复密码</fluent-text-field></p>
+            <p id="hint">{{ message }}</p>
+            <fluent-button appearance="accent" type="submit">修改密码</fluent-button>
+        </form>
+        <script>
+            document.querySelector("form").addEventListener("submit", function(e) {
+                var form = new FormData(document.querySelector("form"));
+                if(form.get("old_password") == "" || form.get("new_password") == "" || form.get("retype_password") == "") {
+                    document.querySelector("#hint").innerHTML = "密码不能为空。";
+                    e.preventDefault();
+                }
+                if (form.get("new_password") != form.get("retype_password")) {
+                    document.querySelector("#hint").innerHTML = "两次输入的密码不一致。";
+                    e.preventDefault();
+                }
+            });
+        </script>
+    </div>
+</body>

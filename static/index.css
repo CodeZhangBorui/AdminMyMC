@@ -1,0 +1,27 @@
+body {
+    margin: 0px;
+}
+
+div.app {
+    margin: 12px;
+}
+
+.hidden {
+    display: none;
+}
+
+div.topmenu {
+    background-color: #fbfbfb;
+    padding: 0.5em;
+    display: flex;
+    justify-content: space-between;
+}
+
+fluent-card.taskCard {
+    height: auto;
+    padding: 20;
+}
+
+fluent-menu {
+    z-index: 1000;
+}

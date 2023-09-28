@@ -1,0 +1,47 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>{{ siteinfo.site_name }} - 子服务器管理</title>
+    <link rel="stylesheet" href="/static/index.min.css">
+    <script type="module" src="/static/fluentui-web-components.min.js"></script>
+</head>
+<body>
+    <div class="topmenu">
+        <div>
+            {% for menu in menus %}
+            <fluent-anchor href="{{ menu.href }}" appearance="lightweight">{{ menu.text }}</fluent-anchor>
+            {% endfor %}
+        </div>
+        <div>
+            <fluent-anchor href="javascript:switchUserMenu()" appearance="lightweight">{{ username }}</fluent-anchor>
+            <fluent-menu class="hidden" style="position: fixed; right: 5px; top: 50px;">
+                {% for menu in personalmenus %}
+                <fluent-menu-item onclick="window.location.href='{{ menu.href }}'">{{ menu.text }}</fluent-menu-item>
+                {% endfor %}
+            </fluent-menu>
+            <script>
+                function switchUserMenu() {
+                    var menu = document.querySelector('.topmenu fluent-menu');
+                    if (menu.classList.contains('hidden')) {
+                        menu.classList.remove('hidden');
+                    } else {
+                        menu.classList.add('hidden');
+                    }
+                }
+            </script>
+        </div>
+    </div>
+    <div class="app">
+        <h2>子服务器管理</h2>
+        <p>在这里调整有关子服务器的设定。</p>
+        <p>管理员共给您分配了 {{ servers|length }} 个子服务器。</p>
+        {% for server in servers %}
+        <fluent-card class="taskCard">
+            <p>连接名称：{{ server.name }}</p>
+            <p>连接地址：{{ server.host }}</p>
+            <fluent-button appearance="accent" onclick="window.location.href='/servers/edit?id={{ server.name }}'">编辑</fluent-button>
+        </fluent-card>
+        <br/>
+        {% endfor %}
+    </div>
+</body>

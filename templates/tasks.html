@@ -1,0 +1,50 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>{{ siteinfo.site_name }} - 计划任务</title>
+    <link rel="stylesheet" href="/static/index.min.css">
+    <script type="module" src="/static/fluentui-web-components.min.js"></script>
+</head>
+<body>
+    <div class="topmenu">
+        <div>
+            {% for menu in menus %}
+            <fluent-anchor href="{{ menu.href }}" appearance="lightweight">{{ menu.text }}</fluent-anchor>
+            {% endfor %}
+        </div>
+        <div>
+            <fluent-anchor href="javascript:switchUserMenu()" appearance="lightweight">{{ username }}</fluent-anchor>
+            <fluent-menu class="hidden" style="position: fixed; right: 5px; top: 50px;">
+                {% for menu in personalmenus %}
+                <fluent-menu-item onclick="window.location.href='{{ menu.href }}'">{{ menu.text }}</fluent-menu-item>
+                {% endfor %}
+            </fluent-menu>
+            <script>
+                function switchUserMenu() {
+                    var menu = document.querySelector('.topmenu fluent-menu');
+                    if (menu.classList.contains('hidden')) {
+                        menu.classList.remove('hidden');
+                    } else {
+                        menu.classList.add('hidden');
+                    }
+                }
+            </script>
+        </div>
+    </div>
+    <div class="app">
+        <h2>计划任务</h2>
+        <p>在这里调整服务器的计划任务。</p>
+        <p>In progress. In heavy development</p>
+        <!--<p>共有 {{ count }} 个计划任务。</p>
+        {% for task in tasks %}
+        <fluent-card class="taskCard">
+            <h4>{{ task.name }}</h4>
+            <p>计划时间：{{ task.schedule }}</p>
+            <p>任务类型：{{ task.type }}</p>
+            <p>任务负载：{{ task.payload }}</p>
+            <fluent-button appearance="accent">编辑</fluent-button>
+        </fluent-card>
+        <br/>
+        {% endfor %}-->
+    </div>
+</body>

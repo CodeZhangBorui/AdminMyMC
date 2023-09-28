@@ -1,0 +1,27 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>{{ siteinfo.site_name }} - 编辑服务器：{{ server.name }}</title>
+    <link rel="stylesheet" href="/static/index.min.css">
+    <script type="module" src="/static/fluentui-web-components.min.js"></script>
+</head>
+<body>
+    <div class="app">
+        <h2>修改服务器信息</h2>
+        <p>在这里修改服务器的信息。</p>
+        <p>请注意：更改信息后可能需要 Worker 执行同步并完成重启任务后才可生效。</p>
+        <fluent-anchor href="javascript:window.history.go(-1)" appearance="lightweight">< 返回</fluent-anchor>
+        <form action="/servers/edit?id={{ server.name }}" method="post">
+            <p>服务器名称：{{ server.name }}</p>
+            <p><fluent-text-field type=text name=host appearance="outline" value="{{ server.host }}">服务器连接地址</fluent-text-field></p>
+            <p id="hint">{{ message }}</p>
+            <fluent-button appearance="accent" type="submit">确认修改</fluent-button>
+        </form>
+        <script>
+            document.querySelector("form").addEventListener("submit", function(e) {
+                var form = new FormData(document.querySelector("form"));
+                //e.preventDefault();
+            });
+        </script>
+    </div>
+</body>
