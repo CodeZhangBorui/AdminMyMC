@@ -36,8 +36,9 @@ personalmenus = [
     }
 ]
 
+
 def render_menus(session):
-    if(check_permission(session['username']) == 10):
+    if check_permission(session['username']) == 10:
         return menus + adminmenus
     else:
         return menus

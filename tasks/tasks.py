@@ -1,53 +1,67 @@
-from .tasks_lib import *
+import time
+import logging
 import threading
 
 import json
 from mcstatus import JavaServer
 from pydactyl import PterodactylClient
 
+logger = logging.getLogger("Tasks Worker")
+
 # Read tasks config
-log("Reading tasks config...", origin="SERVERS_EDIT")
+logger.info("Reading tasks config...")
 try:
     with open('tasks/config.json') as f:
         tasks_config = json.load(f)
-except:
-    log("Failed to read tasks config, please check your config file.", origin="SERVERS_EDIT")
+except FileNotFoundError:
+    logger.critical("Failed to read tasks config: File not found")
+    exit(1)
+except json.JSONDecodeError:
+    logger.critical("Failed to read tasks config: Couldn't decode json")
     exit(1)
 
 # Read pterodactyl key from file
-log("Reading Pterodactyl client key...", origin="SERVERS_EDIT")
+logger.info("Reading Pterodactyl client key...")
 try:
     with open('config/ptero.key') as f:
         pterodactyl_key = f.read()
-except:
-    log("Failed to read pterodactyl key, please check your key file.", origin="SERVERS_EDIT")
+except FileNotFoundError:
+    logger.critical("Failed to read pterodactyl key: File not found")
+    exit(1)
+except json.JSONDecodeError:
+    logger.critical("Failed to read pterodactyl key: Couldn't decode json")
     exit(1)
 
 # Create a client to connect to the panel and authenticate with your API key.
-log("Connecting to panel...", origin="SERVERS_EDIT")
+logger.info("Connecting to panel...")
 try:
     api = PterodactylClient(tasks_config['endpoint'], pterodactyl_key)
 except:
-    log("Failed to connect to panel, please check your config and network.", origin="SERVERS_EDIT")
+    logger.critical("Failed to connect to panel, please check your config and network.")
     exit(1)
 
-class online_players(threading.Thread):
+
+class OnlinePlayers(threading.Thread):
     def run(self):
+        logger = logging.getLogger("Online Players")
         # Read the number of online players from a Minecraft server through network
         try:
             online_players = JavaServer.lookup(tasks_config['ping_host']).status().players.online
         except:
-            log("Failed to get online players from Minecraft server, please check your config file.", origin="ONLINE_PLAYERS")
+            logger.error("Failed to get online players from Minecraft server, please check your config file.")
             return
-        log("Get online players from Minecraft server: " + str(online_players), origin="ONLINE_PLAYERS")
+        logger.info("Get online players from Minecraft server: " + str(online_players))
         # Get Unix Timestamp as ms
         timestamp = int(round(time.time() * 1000))
         # Read online.json from static
         try:
             with open('static/online.json') as f:
                 online_json = json.load(f)
-        except:
-            log("Failed to read online.json, please check your config file.", origin="ONLINE_PLAYERS")
+        except FileNotFoundError:
+            logger.error("Failed to read online.json: File not found")
+            return
+        except json.JSONDecodeError:
+            logger.error("Failed to read online.json: Couldn't decode json")
             return
         # Add the new data to online.json
         online_json["online"].append([timestamp, online_players])
@@ -55,79 +69,93 @@ class online_players(threading.Thread):
         try:
             with open('static/online.json', 'w') as outfile:
                 json.dump(online_json, outfile)
-        except:
-            log("Failed to write online.json, please check your config file.", origin="ONLINE_PLAYERS")
+        except FileNotFoundError:
+            logger.error("Failed to write online.json: File not found")
             return
+
 
 import json
 import yaml
 
-class servers_edit(threading.Thread):
+
+class ServersEdit(threading.Thread):
     def run(self):
+        logger = logging.getLogger("Servers Edit")
         # Read the queue from file
         try:
             with open('queue/servers_edit.json') as f:
                 queue = json.load(f)
             queue = queue["task"]
-        except:
-            log("Failed to read queue file, please check your filepack", origin="SERVERS_EDIT")
+        except FileNotFoundError:
+            logger.error("Failed to read queue file: File not found")
+            return
+        except json.JSONDecodeError:
+            logger.error("Failed to read queue file: Couldn't decode json")
             return
 
         if len(queue) == 0:
-            log("Noting to do, queue is clean.", origin="SERVERS_EDIT")
+            logger.info("Noting to do, queue is clean.")
             return
-        
+
         # Get old config
-        log("Get remote config...", origin="SERVERS_EDIT")
+        logger.debug("Get remote config...")
         try:
-            config = yaml.load(api.client.servers.files.get_file_contents(tasks_config['server_id'], "config.yml").text, Loader=yaml.FullLoader)
+            config = yaml.load(api.client.servers.files.get_file_contents(tasks_config['server_id'], "config.yml").text,
+                               Loader=yaml.FullLoader)
+        except yaml.YAMLError:
+            logger.error("Failed to get remote config: Yaml Error")
+            return
         except:
-            log("Failed to get remote config, please check your config file.", origin="SERVERS_EDIT")
+            logger.error("Failed to get remote config")
             return
 
         while len(queue) != 0:
             first = queue[0]
             queue.pop(0)
-            log(f"Update server {first['server']} to {first['host']}", origin="SERVERS_EDIT")
+            logger.info(f"Update server {first['server']} to {first['host']}")
             config["servers"][first["server"]]["address"] = first["host"]
 
         # Write the new config
-        log("Write remote config...", origin="SERVERS_EDIT")
+        logger.debug("Write remote config...")
         try:
             api.client.servers.files.write_file(tasks_config['server_id'], "config.yml", yaml.dump(config))
         except:
-            log("Failed to write remote config, please check your config file.", origin="SERVERS_EDIT")
+            logger.error("Failed to write remote config")
             return
 
         # Clean the queue file
         try:
             with open('queue/servers_edit.json', 'w') as outfile:
                 json.dump({"task": queue}, outfile)
-        except:
-            log("Failed to clean queue file, please check your config file.", origin="SERVERS_EDIT")
+        except FileNotFoundError:
+            logger.error("Failed to clean queue file: File not found")
             return
+        except:
+            logger.error("Failed to clean queue file")
+
 
 import json
 
-class restart(threading.Thread):
+class Restart(threading.Thread):
     def run(self):
+        logger = logging.getLogger("Restart")
         # Read the queue from file
         try:
             with open('queue/restart.json') as f:
                 queue = json.load(f)
         except:
-            log("Failed to read queue file, please check your filepack", origin="SERVERS_EDIT")
+            logger.error("Failed to read queue file, please check your filepack")
             return
 
-        if queue["restart"] == False:
-            log("No restarting request is queued.", origin="RESTART")
+        if not queue["restart"]:
+            logger.info("No restarting request is queued.")
             return
-        
-        log("Restarting server...", origin="RESTART")
+
+        logger.info("Restarting server...")
         try:
             api.client.servers.send_power_action(tasks_config['server_id'], "restart")
         except:
-            log("Failed to restart server, please check your config file.", origin="RESTART")
+            logger.error("Failed to restart server, please check your config file.")
             return
         queue["restart"] = False
 
@@ -136,5 +164,5 @@ class restart(threading.Thread):
             with open('queue/restart.json', 'w') as outfile:
                 json.dump(queue, outfile)
         except:
-            log("Failed to save queue file, please check your config file.", origin="RESTART")
+            logger.error("Failed to save queue file, please check your config file.")
             return
