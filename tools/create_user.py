@@ -20,12 +20,12 @@ data['users'].append({
 with open('data/users.json', 'w') as outfile:
     json.dump(data, outfile)
 
-if(new_admin == "y"):
+if new_admin == "y":
     new_admin = True
 else:
     new_admin = False
-    
-if(new_banned == "y"):
+
+if new_banned == "y":
     new_banned = True
 else:
     new_banned = False

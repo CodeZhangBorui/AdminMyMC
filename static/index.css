@@ -1,5 +1,5 @@
 body {
-    margin: 0px;
+    margin: 0;
 }
 
 div.app {
@@ -19,7 +19,7 @@ div.topmenu {
 
 fluent-card.taskCard {
     height: auto;
-    padding: 20;
+    padding: 20px;
 }
 
 fluent-menu {
