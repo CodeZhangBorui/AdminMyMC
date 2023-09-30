@@ -9,6 +9,10 @@ menus = [
     {
         "text": "子服务器管理",
         "href": "/servers"
+    },
+    {
+        "text": "重启服务器",
+        "href": "/restart"
     }
 ]
 

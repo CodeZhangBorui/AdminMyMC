@@ -37,7 +37,8 @@ with open('data/permissions.json') as json_file:
 # Add the new user
 data[new_user] = {
     "admin": new_admin,
-    "banned": new_banned
+    "banned": new_banned,
+    "last_restart": 0
 }
 
 # Write the permissions file

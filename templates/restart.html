@@ -1,0 +1,42 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>{{ siteinfo.site_name }} - API 与 API 密钥</title>
+    <link rel="stylesheet" href="/static/index.min.css">
+    <script type="module" src="/static/fluentui-web-components.min.js"></script>
+</head>
+<body>
+    <div class="topmenu">
+        <div>
+            {% for menu in menus %}
+            <fluent-anchor href="{{ menu.href }}" appearance="lightweight">{{ menu.text }}</fluent-anchor>
+            {% endfor %}
+        </div>
+        <div>
+            <fluent-anchor href="javascript:switchUserMenu()" appearance="lightweight">{{ username }}</fluent-anchor>
+            <fluent-menu class="hidden" style="position: fixed; right: 5px; top: 50px;">
+                {% for menu in personalmenus %}
+                <fluent-menu-item onclick="window.location.href='{{ menu.href }}'">{{ menu.text }}</fluent-menu-item>
+                {% endfor %}
+            </fluent-menu>
+            <script>
+                function switchUserMenu() {
+                    var menu = document.querySelector('.topmenu fluent-menu');
+                    if (menu.classList.contains('hidden')) {
+                        menu.classList.remove('hidden');
+                    } else {
+                        menu.classList.add('hidden');
+                    }
+                }
+            </script>
+        </div>
+    </div>
+    <div class="app">
+        <h2>重新启动服务器</h2>
+        <p>当在线人数为 0 时，您可以在这里手动重新启动服务器以重载配置</p>
+        <form action="/restart" method="post">
+            <p id="hint">{{ message }}</p>
+            <fluent-button onclick="window.location.href='/restart/action'" appearance="accent" type="submit">立即重启</fluent-button>
+        </form>
+    </div>
+</body>

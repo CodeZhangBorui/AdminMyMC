@@ -36,7 +36,11 @@ def login_status(session):
         for user in data['users']:
             if (user['username'] == session['username'] and hashlib.sha256(
                     user['password'].encode('utf-8')).hexdigest() == session['token']):
-                return True
+                # Read the permission file
+                with open('data/permissions.json') as json_file:
+                    data = json.load(json_file)
+                if not data[session['username']]['banned']:
+                    return True
         do_logout(session)
         return False
 

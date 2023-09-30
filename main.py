@@ -1,10 +1,14 @@
+from time import time
+
 from flask import Flask, request, redirect, session, render_template
 
 from users import *
 from servers import *
 from interface import *
 
-DEBUG_MODE = False
+from mcstatus import JavaServer
+
+DEBUG_MODE = True
 
 app = Flask(__name__)
 
@@ -125,6 +129,63 @@ def servers_edit():
         return redirect("/servers", code=302)
 
 
+# /restart
+@app.route('/restart', methods=['GET', 'POST'])
+def restart():
+    if not login_status(session):
+        return redirect('/login', code=302)
+    try:
+        online_players = JavaServer.lookup(siteinfo['ping_host']).status().players.online
+    except:
+        online_players = "获取失败"
+    with open('data/permissions.json') as json_file:
+        data = json.load(json_file)
+    if data[session['username']]['last_restart'] + 3600 * 24 > int(round(time())):  # 24 hours
+        subtime = data[session['username']]['last_restart'] + 3600 * 24 - int(round(time()))
+        avail = str(int(subtime / 60 / 60)) + " 小时 " + str(int(subtime / 60 % 60)) + " 分钟（您只能每隔 24 小时重启一次）"
+    else:
+        avail = "现在"
+    if(request.method == 'GET'):
+        return render_template(
+            'restart.html',
+            siteinfo=siteinfo,
+            username=session["username"],
+            menus=render_menus(session),
+            personalmenus=personalmenus,
+            servers=get_servers(session['username']),
+            message=f"当前人数：{online_players}，下次可重启时间：{avail}"
+        )
+    elif(request.method == 'POST'):
+        if(avail != "现在" or online_players != 0):
+            return render_template(
+                'restart.html',
+                siteinfo=siteinfo,
+                username=session["username"],
+                menus=render_menus(session),
+                personalmenus=personalmenus,
+                servers=get_servers(session['username']),
+                message="当前服务器在线人数不为 0 或距离上次重启不足 24 小时，无法重启。"
+            )
+        with open('data/permissions.json') as json_file:
+            data = json.load(json_file)
+        data[session['username']]['last_restart'] = int(round(time()))
+        with open('data/permissions.json', 'w') as outfile:
+            json.dump(data, outfile)
+        with open('queue/restart.json') as json_file:
+            data = json.load(json_file)
+        data['restart'] = True
+        with open('queue/restart.json', 'w') as outfile:
+            json.dump(data, outfile)
+        return render_template(
+            'restart.html',
+            siteinfo=siteinfo,
+            username=session["username"],
+            menus=render_menus(session),
+            personalmenus=personalmenus,
+            servers=get_servers(session['username']),
+            message="已向队列工作进程发起重启请求"
+        )
+
 # /apikey
 @app.route('/apikey')
 def apikey():
@@ -212,7 +273,4 @@ def favicon():
     return "", 404
 
 
-if DEBUG_MODE:
-    app.run(host='127.0.0.1', port=1356, debug=True)
-else:
-    app.run(host='127.0.0.1', port=1356, debug=False)
+app.run(host='127.0.0.1', port=1356, debug=DEBUG_MODE)

@@ -1,3 +1,4 @@
 {
-    "site_name": "hjMC AdminPanel"
+    "site_name": "hjMC AdminPanel",
+    "ping_host": "cp.rainplay.cn:20214"
 }

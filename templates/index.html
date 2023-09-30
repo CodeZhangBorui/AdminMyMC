@@ -39,7 +39,6 @@
     <div class="app">
         <p>Powered by AdminMyMC by CodeZhangBorui, ver1.3.3@b20230928</p>
         <div id="container24" style="min-width:400px;height:400px"></div>
-        <div id="container7d" style="min-width:400px;height:400px"></div>
         <script>
             Highcharts.setOptions({ global: { useUTC: false } }); 
             var chart24 = null;
@@ -120,86 +119,7 @@
                         data: data['online']
                     }]
                 });
-            }); 
-            var chart7d = null;
-            $.getJSON('/static/online.json', function (data) {
-                chart7d = Highcharts.chart('container7d', {
-                    chart: {
-                        zoomType: 'x'
-                    },
-                    title: {
-                        text: '服务器在线人数图'
-                    },
-                    subtitle: {
-                        text: '7 天'
-                    },
-                    xAxis: {
-                        type: 'datetime',
-                        maxRange: 7 * 24 * 60 * 60 * 1000,
-                        dateTimeLabelFormats: {
-                            millisecond: '%H:%M:%S.%L',
-                            second: '%H:%M:%S',
-                            minute: '%H:%M',
-                            hour: '%H:%M',
-                            day: '%m-%d',
-                            week: '%m-%d',
-                            month: '%Y-%m',
-                            year: '%Y'
-                        }
-                    },
-                    tooltip: {
-                        dateTimeLabelFormats: {
-                            millisecond: '%H:%M:%S.%L',
-                            second: '%H:%M:%S',
-                            minute: '%H:%M',
-                            hour: '%H:%M',
-                            day: '%Y-%m-%d',
-                            week: '%m-%d',
-                            month: '%Y-%m',
-                            year: '%Y'
-                        }
-                    },
-                    yAxis: {
-                        title: {
-                            text: '人数'
-                        }
-                    },
-                    legend: {
-                        enabled: false
-                    },
-                    plotOptions: {
-                        area: {
-                            fillColor: {
-                                linearGradient: {
-                                    x1: 0,
-                                    y1: 0,
-                                    x2: 0,
-                                    y2: 1
-                                },
-                                stops: [
-                                    [0, new Highcharts.getOptions().colors[0]],
-                                    [1, new Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
-                                ]
-                            },
-                            marker: {
-                                radius: 2
-                            },
-                            lineWidth: 1,
-                            states: {
-                                hover: {
-                                    lineWidth: 1
-                                }
-                            },
-                            threshold: null
-                        }
-                    },
-                    series: [{
-                        type: 'area',
-                        name: '人数',
-                        data: data['online']
-                    }]
-                });
-            }); 
+            });
         </script>
     </div>
 </body>
