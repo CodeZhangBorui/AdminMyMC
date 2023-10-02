@@ -1,1 +1,1 @@
-{"restart": false}
+{"restart": true, "retry": 8}
