@@ -151,18 +151,44 @@ class Restart(threading.Thread):
             logger.info("No restarting request is queued.")
             return
 
+        try:
+            online_players = JavaServer.lookup(tasks_config['ping_host']).status().players.online
+        except:
+            logger.error("Failed to get online players from Minecraft server, please check your config file.")
+            return
+        if online_players != 0:
+            if queue["retry"] >= 120:
+                logger.info("There are still players online for two hours, cancelled restart.")
+                try:
+                    with open('queue/restart.json', 'w') as outfile:
+                        json.dump({
+                            "restart": False,
+                        }, outfile)
+                except:
+                    logger.error("Failed to save queue file, please check your config file.")
+            else:
+                logger.info(f"There are still players online for {queue['retry']} minutes, please wait for them to leave.")
+                queue["retry"] += 1
+                try:
+                    with open('queue/restart.json', 'w') as outfile:
+                        json.dump(queue, outfile)
+                except:
+                    logger.error("Failed to save queue file, please check your config file.")
+            return
+
         logger.info("Restarting server...")
         try:
             api.client.servers.send_power_action(tasks_config['server_id'], "restart")
         except:
             logger.error("Failed to restart server, please check your config file.")
             return
-        queue["restart"] = False
 
         # Save the queue file
         try:
             with open('queue/restart.json', 'w') as outfile:
-                json.dump(queue, outfile)
+                json.dump({
+                    "restart": False,
+                }, outfile)
         except:
             logger.error("Failed to save queue file, please check your config file.")
             return
