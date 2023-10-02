@@ -8,7 +8,7 @@ from interface import *
 
 from mcstatus import JavaServer
 
-DEBUG_MODE = True
+DEBUG_MODE = False
 
 app = Flask(__name__)
 
