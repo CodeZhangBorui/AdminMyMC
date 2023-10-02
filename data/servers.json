@@ -1,1 +1,46 @@
-{"servers": [{"name": "Lobby", "owner": [], "host": "cp.rainplay.cn:20071"}, {"name": "hjMC", "owner": [], "host": "1.117.172.115:1145"}, {"name": "hjMC2", "owner": [], "host": "sipc.x3322.net:25569"}, {"name": "BedWars", "owner": [], "host": "cp.rainplay.cn:20114"}, {"name": "Pit", "owner": [], "host": "play.simpfun.cn:10520"}, {"name": "Loco", "owner": [], "host": "mc.server.hb.idc.work:25557"}, {"name": "SkyBlock", "owner": ["hachett"], "host": "115.159.212.201:19778"}]}
+{
+  "servers": [
+    {
+      "name": "Lobby",
+      "owner": [],
+      "host": "cp.rainplay.cn:20071"
+    },
+    {
+      "name": "hjMC",
+      "owner": [],
+      "host": "1.117.172.115:1145"
+    },
+    {
+      "name": "hjMC2",
+      "owner": ["SIPC_2333"],
+      "host": "play.sipc.ink:25569"
+    },
+    {
+      "name": "Bedwars",
+      "owner": ["SIPC_2333"],
+      "host": "play.sipc.ink:25568"
+    },
+    {
+      "name": "Pit",
+      "owner": [],
+      "host": "play.simpfun.cn:10520"
+    },
+    {
+      "name": "Loco",
+      "owner": [],
+      "host": "mc.server.hb.idc.work:25557"
+    },
+    {
+      "name": "SkyBlock",
+      "owner": [
+        "hachett"
+      ],
+      "host": "115.159.212.201:19778"
+    },
+    {
+      "name": "TNTrun",
+      "owner": ["Aoody743"],
+        "host": "gdcloud-nat0.qyunt.com:24500"
+    }
+  ]
+}
